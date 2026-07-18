@@ -39,3 +39,4 @@ def create_refresh_token(subject:str) -> str:
         settings.SECRET_KEY,
         algorithm= settings.ALGORITHM
     )
+

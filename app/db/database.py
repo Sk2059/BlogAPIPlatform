@@ -3,12 +3,12 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     AsyncSession
 )
-from app.core.config import Settings
+from app.core.config import settings
 
 #creating engine
 engine = create_async_engine(
-    Settings.DATABASE_URL,
-    echo = Settings.DEBUG
+    settings.DATABASE_URL,
+    echo = settings.DEBUG
 )
 
 # binding engine
