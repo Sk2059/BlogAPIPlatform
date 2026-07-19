@@ -1,11 +1,15 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from datetime import datetime,timezone,timedelta
 
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
 from app.schemas.user import UserCreate
 from app.core.security import hash_password,verify_password
-from app.core.jwt import create_access_token,create_refresh_token
-from app.schemas.auth import LoginRequest , TokenResponse
+from app.core.jwt import create_access_token,create_refresh_token,decode_token
+from app.schemas.auth import LoginRequest , TokenResponse , RefreshRequest
+from app.models.refresh_token import RefreshToken
+from app.repositories.refresh_token_repository import RefreshTokenRepository
+from app.core.config import settings
 
 class AuthService:
 
@@ -84,7 +88,79 @@ class AuthService:
             str(user.id)
         )
 
+        refresh = RefreshToken(
+            user_id = user.id,
+            token = refresh_token,
+            expires_at = datetime.now(timezone.utc) + timedelta(
+            days=settings.REFRESH_TOKEN_EXPIRE_DAYS 
+            )
+        )
+        await RefreshTokenRepository.create(
+            db,
+            refresh
+        )
+
         return TokenResponse(
             access_token=access_token,
             refresh_token=refresh_token
         )
+    
+    @staticmethod
+    async def refresh_access_token(
+            db:AsyncSession,
+            request:RefreshRequest
+    ):
+        stored_token = await (
+            RefreshTokenRepository.get_by_token(
+                db,
+                request.refresh_token
+            )
+        )
+
+        if not stored_token:
+            raise ValueError("invalid refresh token")
+        
+        if stored_token.revoked:
+            raise ValueError("Refresh token revoked")
+
+        payload = decode_token(request.refresh_token)
+
+        if payload is None:
+            raise ValueError("Invalid token")
+        
+        user_id = payload["sub"]
+
+        access = create_access_token(user_id)
+
+        return {
+        "access_token": access
+        }
+    
+    @staticmethod
+    async def logout(
+        db:AsyncSession,
+        refresh_token:str
+    ):
+        await RefreshTokenRepository.revoke(
+            db,
+            refresh_token
+        )
+
+        return {
+            "logout successful"
+        }
+    
+    @staticmethod
+    async def logout_everywhere(
+        db:AsyncSession,
+        user_id:int
+    ):
+        await RefreshTokenRepository.revoke_all_user_token(
+            db,
+            user_id
+        )
+
+        return {
+            "lout from all devices succeefull"
+        }
+        

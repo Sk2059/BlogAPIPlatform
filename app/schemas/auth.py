@@ -15,3 +15,6 @@ class RefreshRequest(BaseModel):
 
 class RegisterResponse(BaseModel):
     message : str 
+
+class LogoutAllRequest(BaseModel):
+    user_id: int
