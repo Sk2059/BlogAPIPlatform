@@ -33,6 +33,11 @@ class User(Base):
         index=True
     )
 
+    full_name: Mapped[str | None] = mapped_column(
+    String(100),
+    nullable=True
+    )
+
     password_hash: Mapped[str]=mapped_column(
         String,
         nullable=False
@@ -42,6 +47,26 @@ class User(Base):
         SQLEnum(UserRole),
         default=UserRole.USER,
         nullable=False
+    )
+
+    bio: Mapped[str | None] = mapped_column(
+    String(500),
+    nullable=True
+    )
+
+    avatar_url: Mapped[str | None] = mapped_column(
+        String(500),
+        nullable=True
+    )
+
+    website: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True
+    )
+
+    location: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True
     )
 
     is_varified: Mapped[bool]=mapped_column(
