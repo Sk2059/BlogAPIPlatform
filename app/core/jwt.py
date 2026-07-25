@@ -1,8 +1,18 @@
 from datetime import datetime , timedelta, timezone
+from typing import Any
 from jose import jwt , JWTError
 from app.core.config import settings
 
 def create_access_token(subject:str) -> str:
+    """
+    Create a short-lived JWT access token.
+
+    Args:
+        subject: User ID as string.
+
+    Returns:
+        Encoded JWT access token.
+    """
     expire = datetime.now(
         timezone.utc
     )+timedelta(
@@ -31,7 +41,7 @@ def create_refresh_token(subject:str) -> str:
     payload ={
         "sub":subject,
         "exp":expire,
-        "type":"access"
+        "type":"refresh"
     }
 
     return jwt.encode(
@@ -40,7 +50,7 @@ def create_refresh_token(subject:str) -> str:
         algorithm= settings.ALGORITHM
     )
 
-def decode_token(token:str):
+def decode_token(token:str)-> dict[str, Any] | None:
     try :
         payload = jwt.decode(
             token,

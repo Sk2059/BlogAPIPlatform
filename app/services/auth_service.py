@@ -107,34 +107,63 @@ class AuthService:
     
     @staticmethod
     async def refresh_access_token(
-            db:AsyncSession,
-            request:RefreshRequest
+        db: AsyncSession,
+        request: RefreshRequest
     ):
-        stored_token = await (
-            RefreshTokenRepository.get_by_token(
-                db,
-                request.refresh_token
-            )
+        # Find refresh token
+        stored_token = await RefreshTokenRepository.get_by_token(
+            db,
+            request.refresh_token
         )
 
         if not stored_token:
-            raise ValueError("invalid refresh token")
-        
+            raise ValueError("Invalid refresh token")
+
+        # Check if already revoked
         if stored_token.revoked:
             raise ValueError("Refresh token revoked")
 
+        # Decode JWT
         payload = decode_token(request.refresh_token)
 
         if payload is None:
             raise ValueError("Invalid token")
-        
+
+        # Ensure it is actually a refresh token
+        if payload.get("type") != "refresh":
+            raise ValueError("Invalid token type")
+
         user_id = payload["sub"]
 
-        access = create_access_token(user_id)
+        # Revoke old refresh token
+        await RefreshTokenRepository.revoke_by_id(
+            db,
+            stored_token.id
+        )
 
-        return {
-        "access_token": access
-        }
+        # enerate new tokens
+        new_access = create_access_token(user_id)
+
+        new_refresh = create_refresh_token(user_id)
+
+        # Save new refresh token
+        refresh = RefreshToken(
+            user_id=int(user_id),
+            token=new_refresh,
+            expires_at=lambda: datetime.now(timezone.utc) +
+            timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+        )
+
+        await RefreshTokenRepository.create(
+            db,
+            refresh
+        )
+
+        #Return both tokens
+        return TokenResponse(
+            access_token=new_access,
+            refresh_token=new_refresh
+        )
     
     @staticmethod
     async def logout(

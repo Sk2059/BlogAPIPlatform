@@ -50,3 +50,16 @@ class RefreshTokenRepository:
             .values(revoked=True)
         )
         await db.commit()
+
+    @staticmethod
+    async def revoke_by_id(
+        db: AsyncSession,
+        token_id: int
+    ):
+        await db.execute(
+            update(RefreshToken)
+            .where(RefreshToken.id == token_id)
+            .values(revoked=True)
+        )
+
+        await db.commit()

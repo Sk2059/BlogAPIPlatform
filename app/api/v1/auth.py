@@ -6,6 +6,8 @@ from app.schemas.user import UserCreate ,UserResponse
 from app.services.auth_service import AuthService
 from app.schemas.auth import LoginRequest,TokenResponse,LogoutAllRequest
 from app.schemas.auth import RefreshRequest
+from app.models.user import User
+from app.api.deps import get_current_user
 
 
 router = APIRouter(
@@ -107,3 +109,9 @@ async def logoutAll(
     return {
         "message": "Successfully logged out from everwhere."
     }
+
+@router.get("/me", response_model=UserResponse)
+async def get_me(
+    current_user: User = Depends(get_current_user)
+):
+    return current_user
