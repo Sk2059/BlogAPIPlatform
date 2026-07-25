@@ -4,6 +4,7 @@ from enum import Enum
 from sqlalchemy import String,Boolean,DateTime,Enum as SQLEnum
 from sqlalchemy.orm import mapped_column,Mapped
 from app.db.base_class import Base
+from app.models.enums import UserRole
 
 class UserRole(str,Enum):
     USER = "USER"

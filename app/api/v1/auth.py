@@ -115,3 +115,16 @@ async def get_me(
     current_user: User = Depends(get_current_user)
 ):
     return current_user
+
+from app.core.permission import require_roles
+from app.models.enums import UserRole
+@router.get("/admin-test")
+async def admin_test(
+    current_user: User = Depends(
+        require_roles(UserRole.ADMIN)
+    )
+):
+    return {
+        "message": "Welcome Admin!",
+        "user": current_user.username
+    }

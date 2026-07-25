@@ -1,7 +1,7 @@
 from datetime import datetime 
 from pydantic import BaseModel , EmailStr
 
-from app.models.user import UserRole
+from app.models.enums import UserRole
 
 class UserBase(BaseModel):
     email:EmailStr
