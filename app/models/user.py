@@ -1,8 +1,8 @@
 from datetime import datetime , timezone
 from enum import Enum 
-
+from app.models.post import Post
 from sqlalchemy import String,Boolean,DateTime,Enum as SQLEnum
-from sqlalchemy.orm import mapped_column,Mapped
+from sqlalchemy.orm import mapped_column,Mapped,relationship
 from app.db.base_class import Base
 from app.models.enums import UserRole
 
@@ -62,6 +62,11 @@ class User(Base):
     website: Mapped[str | None] = mapped_column(
         String(255),
         nullable=True
+    )
+
+    posts: Mapped[list["Post"]] = relationship(
+    back_populates="author",
+    cascade="all, delete-orphan",
     )
 
     location: Mapped[str | None] = mapped_column(
