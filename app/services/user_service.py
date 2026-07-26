@@ -15,7 +15,7 @@ class UserService:
     
 
     @staticmethod
-    async def get_my_prubic_profile(
+    async def get_my_pubic_profile(
         db:AsyncSession,
         username:str
     )-> User:
