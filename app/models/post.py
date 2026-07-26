@@ -1,6 +1,6 @@
 from datetime import datetime , timezone
 from enum import Enum
-from app.models.user import User
+
 from sqlalchemy import (
     String,
     Text,
