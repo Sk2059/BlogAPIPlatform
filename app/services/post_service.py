@@ -214,3 +214,23 @@ class PostService:
             skip,
             limit
         )
+
+    @staticmethod 
+    async def get_post_by_slug(
+            db: AsyncSession,
+            slug: str
+        ):
+            post = await PostRepository.get_by_slug
+            (
+                db,
+                slug
+            )
+    
+            if not post:
+    
+                raise HTTPException(
+                    status_code=404,
+                    detail="Post not found"
+                )
+    
+            return post
