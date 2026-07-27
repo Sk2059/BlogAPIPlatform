@@ -56,6 +56,12 @@ class Post(Base):
         back_populates="posts"
     )
 
+    comments = relationship(
+        "Comment",
+        back_populates="post",
+        cascade="all, delete-orphan"
+    )
+
     created_at: Mapped[datetime] = mapped_column(
     DateTime(timezone=True),
     default=lambda: datetime.now(timezone.utc),
