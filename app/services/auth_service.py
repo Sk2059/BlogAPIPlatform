@@ -192,4 +192,5 @@ class AuthService:
         return {
             "lout from all devices succeefull"
         }
-        
+
+    

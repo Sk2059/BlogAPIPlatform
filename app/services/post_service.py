@@ -95,11 +95,8 @@ class PostService:
         if post.author_id != current_user.id:
 
             raise HTTPException(
-
-                status_code=status.HTTP_403_FORBIDDEN,
-
-                detail="Not allowed"
-
+                status_code=403,
+                detail="You do not have permission to modify this post."
             )
 
     @staticmethod
@@ -225,12 +222,25 @@ class PostService:
                 db,
                 slug
             )
-    
             if not post:
-    
                 raise HTTPException(
                     status_code=404,
                     detail="Post not found"
                 )
     
             return post
+
+    @staticmethod
+    async def search_posts(
+        db,
+        search,
+        skip,
+        limit
+    ):
+
+        return await PostRepository.search_posts(
+            db,
+            search,
+            skip,
+            limit
+        )

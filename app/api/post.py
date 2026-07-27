@@ -37,10 +37,19 @@ async def create_post(
     response_model=list[PostListResponse]
 )
 async def get_posts(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(10, ge=1, le=100),
+    search: str | None = None,
+    skip: int = 0,
+    limit: int = 10,
     db: AsyncSession = Depends(get_db)
+
 ):
+    if search:
+        return await PostService.search_posts(
+            db,
+            search,
+            skip,
+            limit
+        )
 
     return await PostService.list_posts(
         db,

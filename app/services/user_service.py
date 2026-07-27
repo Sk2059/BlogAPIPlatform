@@ -12,7 +12,6 @@ class UserService:
     ) -> User:
         return current_user
 
-    
 
     @staticmethod
     async def get_my_pubic_profile(
@@ -32,7 +31,6 @@ class UserService:
             )
         return user
 
-    
 
     @staticmethod
     async def update_profile(
@@ -106,3 +104,5 @@ class UserService:
             db,
             query
         )
+
+    

@@ -34,7 +34,5 @@ async def get_current_user(
         raise HTTPException(
             status_code= 404,
             detail= "user not found"
-        )
-       
-
+        )    
     return user 

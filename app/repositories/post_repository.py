@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select , or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.post import Post, PostStatus
@@ -68,3 +68,26 @@ class PostRepository:
             .limit(limit)
         )
         return result.scalars().all()
+    
+    @staticmethod
+    async def search_posts(
+        db: AsyncSession,
+        search: str,
+        skip: int = 0,
+        limit: int = 10,
+    ):
+        result = await db.execute(
+            select(Post)
+            .where(
+                Post.status == PostStatus.PUBLISHED,
+                or_(
+                Post.title.ilike(f"%{search}%"),
+                Post.content.ilike(f"%{search}%")
+                )
+            )
+            .offset(skip)
+            .limit(limit)
+            .order_by(Post.created_at.desc())
+        )
+
+        return result
