@@ -69,11 +69,7 @@ class User(Base):
     cascade="all, delete-orphan",
     )
     
-    comments = relationship(
-    "Comment",
-    back_populates="author",
-    cascade="all, delete-orphan"
-)
+    
 
     location: Mapped[str | None] = mapped_column(
         String(100),
@@ -94,4 +90,16 @@ class User(Base):
     DateTime(timezone=True),
     default=lambda: datetime.now(timezone.utc),
     onupdate=lambda: datetime.now(timezone.utc)
+    )
+
+    comments = relationship(
+        "Comment",
+        back_populates="author",
+        cascade="all, delete-orphan"
+    )
+
+    likes = relationship(
+        "Like",
+        back_populates="user",
+        cascade="all, delete-orphan"
     )

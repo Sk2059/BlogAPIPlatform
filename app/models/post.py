@@ -54,13 +54,7 @@ class Post(Base):
 
     author: Mapped["User"] = relationship(
         back_populates="posts"
-    )
-
-    comments = relationship(
-        "Comment",
-        back_populates="post",
-        cascade="all, delete-orphan"
-    )
+    ) 
 
     created_at: Mapped[datetime] = mapped_column(
     DateTime(timezone=True),
@@ -76,4 +70,16 @@ class Post(Base):
     published_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True),
         nullable=True,
+    )
+
+    comments = relationship(
+        "Comment",
+        back_populates="post",
+        cascade="all, delete-orphan"
+    )
+    
+    likes = relationship(
+        "Like",
+        back_populates="post",
+        cascade="all, delete-orphan"
     )
