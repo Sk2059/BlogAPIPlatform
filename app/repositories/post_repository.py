@@ -1,8 +1,10 @@
-from sqlalchemy import select , or_
+from sqlalchemy import select , or_ ,func, desc, asc
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from sqlalchemy.orm import selectinload
 from app.models.post import Post, PostStatus
-
+from app.schemas.post_query import PostQuery
+from app.models.user import User
+from app.models.like import Like
 
 class PostRepository:
 
@@ -91,3 +93,64 @@ class PostRepository:
         )
 
         return result
+
+    @staticmethod
+    async def get_feed(
+        db: AsyncSession,
+        query: PostQuery
+    ):
+        statement = (
+            select(Post)
+            .options(
+                selectinload(Post.author)
+            )
+        )
+
+        if query.published is not None:
+            statement = statement.where(
+                Post.is_published == query.published
+            )
+
+        if query.search:
+            statement = statement.where(
+                Post.title.ilike(
+                    f"%{query.search}%"
+                )
+            )
+
+        if query.author:
+            statement = (
+                statement
+                .join(User)
+                .where(
+                    User.username == query.author
+                )
+            )
+
+        if query.sort == "newest":
+            statement = statement.order_by(
+                desc(Post.created_at)
+            )
+
+        elif query.sort == "oldest":
+            statement = statement.order_by(
+                asc(Post.created_at)
+            )
+
+        offset = (
+            query.page - 1
+        ) * query.limit
+
+        statement = (
+            statement
+            .offset(offset)
+            .limit(query.limit)
+        )
+
+        result = await db.execute(
+            statement
+        )
+
+        return result.scalars().all()
+
+    
