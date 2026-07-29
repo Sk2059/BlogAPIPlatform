@@ -153,4 +153,39 @@ class PostRepository:
 
         return result.scalars().all()
 
-    
+    @staticmethod
+    async def count_posts(
+        db: AsyncSession,
+        query: PostQuery
+    ):
+
+        statement = select(
+            func.count(Post.id)
+        )
+
+        if query.published is not None:
+            statement = statement.where(
+                Post.is_published == query.published
+            )
+
+        if query.search:
+            statement = statement.where(
+                Post.title.ilike(
+                    f"%{query.search}%"
+                )
+            )
+
+        if query.author:
+            statement = (
+                statement
+                .join(User)
+                .where(
+                    User.username == query.author
+                )
+            )
+
+        result = await db.execute(statement)
+
+        return result.scalar()
+
+        
