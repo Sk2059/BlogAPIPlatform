@@ -150,8 +150,8 @@ class AuthService:
         refresh = RefreshToken(
             user_id=int(user_id),
             token=new_refresh,
-            expires_at=lambda: datetime.now(timezone.utc) +
-            timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+            expires_at=datetime.now(timezone.utc)
+            + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
         )
 
         await RefreshTokenRepository.create(
