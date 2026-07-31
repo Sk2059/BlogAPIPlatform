@@ -2,9 +2,10 @@ name: Blog API CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
+
   pull_request:
-    branches: [main]
+    branches: [main, master]
 
 jobs:
   test:
@@ -23,10 +24,10 @@ jobs:
           - 5432:5432
 
         options: >-
-          --health-cmd="pg_isready -U postgres"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     env:
       APP_NAME: Blog API Platform
@@ -44,20 +45,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Wait for PostgreSQL
         run: |
-          sleep 10
+          until pg_isready -h localhost -p 5432 -U postgres; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
 
-      - name: Run Alembic Migrations
+      - name: Run Alembic Migration
         run: |
           alembic upgrade head
 
