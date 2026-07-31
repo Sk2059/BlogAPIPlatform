@@ -7,8 +7,8 @@ from app.models.post import PostStatus
 
 
 class PostBase(BaseModel):
-    title: str = Field(min_length=5, max_length=255)
-    content: str = Field(min_length=20)
+    title: str = Field(min_length=1, max_length=255)
+    content: str = Field(min_length=1)
     excerpt: Optional[str] = Field(default=None, max_length=500)
     cover_image: Optional[str] = None
 
@@ -18,8 +18,8 @@ class PostCreate(PostBase):
 
 
 class PostUpdate(BaseModel):
-    title: Optional[str] = Field(default=None, min_length=5, max_length=255)
-    content: Optional[str] = Field(default=None, min_length=20)
+    title: Optional[str] = Field(default=None, min_length=1, max_length=255)
+    content: Optional[str] = Field(default=None, min_length=1)
     excerpt: Optional[str] = Field(default=None, max_length=500)
     cover_image: Optional[str] = None
 

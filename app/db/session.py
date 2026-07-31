@@ -1,6 +1,1 @@
-from app.db.database import AsyncSessionLocal
-
-async def get_db():
-    async with AsyncSessionLocal() as session:
-        yield session
-        
+from app.db.database import get_db as get_db

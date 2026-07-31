@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from functools import lru_cache
 
@@ -20,6 +21,16 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",
     )
+
+    def __init__(self, **values):
+        super().__init__(**values)
+        if not os.getenv("TESTING"):
+            return
+
+        if self.DATABASE_URL.startswith("postgresql+asyncpg://postgres:sk%23123@db:5432/blog_db"):
+            self.DATABASE_URL = "postgresql+asyncpg://postgres:sk%23123@localhost:5432/blog_db"
+        if self.ALEMBIC_DB.startswith("postgresql+psycopg2://postgres:sk%23123@db:5432/blog_db"):
+            self.ALEMBIC_DB = "postgresql+psycopg2://postgres:sk%23123@localhost:5432/blog_db"
 
 
 @lru_cache

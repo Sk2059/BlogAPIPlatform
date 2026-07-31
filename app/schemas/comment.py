@@ -3,6 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, Field, ConfigDict
 
 class CommentCreate(BaseModel):
+    post_id: int | None = None
     content: str = Field(
         min_length=1,
         max_length=1000,

@@ -20,9 +20,13 @@ class CommentService:
         data: CommentCreate,
         current_user: User
     ):
+        target_post_id = post_id
+        if data.post_id is not None:
+            target_post_id = data.post_id
+
         post = await PostRepository.get_by_id(
             db,
-            post_id
+            target_post_id
         )
         if post is None:
 

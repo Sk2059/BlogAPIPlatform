@@ -18,7 +18,7 @@ router = APIRouter(
     tags=["Users"]
 )
 
-router.get(
+@router.get(
     "/me",
     response_model=UserResponse
 )

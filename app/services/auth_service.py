@@ -7,6 +7,7 @@ from app.schemas.user import UserCreate
 from app.core.security import hash_password,verify_password
 from app.core.jwt import create_access_token,create_refresh_token,decode_token
 from app.schemas.auth import LoginRequest , TokenResponse , RefreshRequest
+from app.schemas.user import UserResponse
 from app.models.refresh_token import RefreshToken
 from app.repositories.refresh_token_repository import RefreshTokenRepository
 from app.core.config import settings
@@ -17,7 +18,7 @@ class AuthService:
     async def register_user(
         db: AsyncSession,
         user_data: UserCreate
-    ) -> User:
+    ) -> UserResponse:
 
         existing_email = await (
             UserRepository.get_by_email(
@@ -51,9 +52,22 @@ class AuthService:
             )
         )
 
-        return await UserRepository.create(
+        created_user = await UserRepository.create(
             db,
             user
+        )
+        return UserResponse(
+            id=created_user.id,
+            email=created_user.email,
+            username=created_user.username,
+            role=created_user.role,
+            is_varified=created_user.is_varified,
+            full_name=created_user.full_name,
+            bio=created_user.bio,
+            avatar_url=created_user.avatar_url,
+            website=created_user.website,
+            location=created_user.location,
+            created_at=created_user.created_at,
         )
     
     @staticmethod

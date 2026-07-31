@@ -39,28 +39,36 @@ async def test_register_user(client):
 
 @pytest.mark.asyncio
 async def test_register_duplicate_email(client):
+    import asyncio
+    import uuid
 
-    email = unique_email()
+    email = f"{uuid.uuid4().hex}@example.com"
 
-    await client.post(
+    response1 = await client.post(
         "/auth/register",
         json={
             "email": email,
-            "username": unique_username(),
-            "password": "pytest#123"
-        }
+            "username": f"user_{uuid.uuid4().hex[:8]}",
+            "password": "pytest#123",
+        },
     )
 
-    response = await client.post(
+    print("FIRST:", response1.status_code)
+
+    await asyncio.sleep(0.2)
+
+    response2 = await client.post(
         "/auth/register",
         json={
             "email": email,
-            "username": unique_username(),
-            "password": "pytest#123"
-        }
+            "username": f"user_{uuid.uuid4().hex[:8]}",
+            "password": "pytest#123",
+        },
     )
 
-    assert response.status_code == 400
+    print("SECOND:", response2.status_code)
+
+    assert response2.status_code == 400
 
 
 @pytest.mark.asyncio

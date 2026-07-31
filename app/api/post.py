@@ -12,10 +12,19 @@ from app.schemas.post import (
 )
 from app.services.post_service import PostService
 
-router = APIRouter( prefix="/posts", tags=["Posts"])
+router = APIRouter(
+    prefix="/posts",
+    tags=["Posts"],
+    redirect_slashes=False,
+)
 
 @router.post(
     "",
+    response_model=PostResponse,
+    status_code=status.HTTP_201_CREATED
+)
+@router.post(
+    "/",
     response_model=PostResponse,
     status_code=status.HTTP_201_CREATED
 )
@@ -34,6 +43,10 @@ async def create_post(
 
 @router.get(
     "",
+    response_model=list[PostListResponse]
+)
+@router.get(
+    "/",
     response_model=list[PostListResponse]
 )
 async def get_posts(

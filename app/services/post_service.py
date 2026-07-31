@@ -29,7 +29,7 @@ class PostService:
         db:AsyncSession,
         title:str
     ):
-        base_slug = PostService.generate_slug(title)
+        base_slug = await PostService.generate_slug(title)
 
         slug = base_slug
 

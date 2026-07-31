@@ -5,7 +5,7 @@ import pytest
 async def test_create_post(client, access_token):
 
     response = await client.post(
-        "/posts/",
+        "/posts",
         headers={
             "Authorization": f"Bearer {access_token}"
         },
