@@ -10,6 +10,24 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16
+
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: blog_db
+
+        ports:
+          - 5432:5432
+
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     env:
       APP_NAME: Blog API Platform
       DEBUG: "True"
@@ -35,5 +53,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run tests
-        run: pytest
+      - name: Wait for PostgreSQL
+        run: |
+          sleep 10
+
+      - name: Run Alembic Migrations
+        run: |
+          alembic upgrade head
+
+      - name: Run Tests
+        run: |
+          pytest -v
