@@ -142,11 +142,6 @@ http://localhost:8000/openapi.json
 
 ---
 
-# Swagger UI
-
-![Swagger Overview](docs/swagger-overview.png)
-
----
 
 # Swagger Documentation
 
